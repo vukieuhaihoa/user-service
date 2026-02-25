@@ -32,7 +32,7 @@ dev-down:
 	docker-compose -f docker-compose.dev.yaml down
 
 dev-run: swag-gen
-	go run ./cmd/api/main.go
+	APP_HOST_NAME=localhost:8080 APP_PORT=:8080 DB_NAME=user go run ./cmd/api/main.go
 
 .PHONY: test 
 test: clean

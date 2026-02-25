@@ -4,8 +4,8 @@
     ],
     "swagger": "2.0",
     "info": {
-        "description": "This is the API documentation for the Bookmark Management service.",
-        "title": "Bookmark Management API",
+        "description": "This is the API documentation for the User service in the Bookmark Management system.",
+        "title": "User API for Bookmark Management Service(DDD Version)",
         "contact": {},
         "version": "1.2"
     },
