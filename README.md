@@ -27,6 +27,7 @@ user-service/
 ├── cmd/
 │   ├── api/main.go          # API server entry point
 │   └── migrate/main.go      # Database migration entry point
+├── docs/                    # Generated Swagger documentation
 ├── internal/
 │   ├── api/                 # Gin engine setup, routing, middleware
 │   ├── app/
@@ -35,7 +36,9 @@ user-service/
 │   │   ├── repository/      # Data access layer
 │   │   └── model/           # Domain models
 │   ├── infrastructure/      # Dependency injection, DB/Redis/JWT init
-│   └── docs/                # Generated Swagger documentation
+│   └── test/
+│       ├── fixture/         # Shared test data and utilities
+│       └── integration/     # Integration test suites
 ├── migrations/              # SQL migration files
 ├── postgres/init_db/        # DB initialization scripts
 ├── .github/workflows/       # CI/CD pipelines
