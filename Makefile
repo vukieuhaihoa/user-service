@@ -63,15 +63,9 @@ docker-build:
 	@echo "Building Docker image: $(IMG_NAME):$(IMG_TAG)"
 	docker build -t $(IMG_NAME):$(IMG_TAG) .
 
-	@echo "Building Docker image for migration: $(IMG_NAME)_migration:$(IMG_TAG)"
-	docker build --target migration -t $(IMG_NAME)_migration:$(IMG_TAG) .
-
 docker-release: docker-build
 	@echo "Pushing Docker image: $(IMG_NAME):$(IMG_TAG)"
 	docker push $(IMG_NAME):$(IMG_TAG)
-
-	@echo "Pushing Docker image for migration: $(IMG_NAME)_migration:$(IMG_TAG)"
-	docker push $(IMG_NAME)_migration:$(IMG_TAG)
 
 docker-up:
 	docker-compose up -d

@@ -14,10 +14,10 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: Deploy Application
-        working-directory: /root/bookmark-deployment
+        working-directory: /root/bookmark-deployment-ddd
         run: |
           echo "Deploying application..."
-          docker rm -f bookmark_service
-          docker-compose pull bookmark_service
-          docker-compose up -d bookmark_service
+          docker rm -f user-service
+          docker-compose pull user_service
+          docker-compose up -d user_service
           docker system prune -f
