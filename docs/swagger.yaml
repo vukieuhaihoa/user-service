@@ -1,0 +1,268 @@
+basePath: /
+definitions:
+  healthcheck.healthCheckResponse:
+    properties:
+      instance_id:
+        type: string
+      message:
+        type: string
+      service_name:
+        type: string
+    type: object
+  model.User:
+    properties:
+      created_at:
+        type: string
+      display_name:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      updated_at:
+        type: string
+      username:
+        type: string
+    type: object
+  user.createUserRequest:
+    properties:
+      display_name:
+        example: Test User
+        type: string
+      email:
+        example: testuser001@example.com
+        type: string
+      password:
+        example: my_SECURE_password123@
+        minLength: 8
+        type: string
+      username:
+        example: testuser001
+        type: string
+    required:
+    - display_name
+    - email
+    - password
+    - username
+    type: object
+  user.createUserResponse:
+    properties:
+      data:
+        $ref: '#/definitions/model.User'
+      message:
+        type: string
+    type: object
+  user.loginRequest:
+    properties:
+      password:
+        example: my_SECURE_password123@
+        minLength: 8
+        type: string
+      username:
+        example: testuser001
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  user.updateProfileRequest:
+    properties:
+      display_name:
+        example: Updated User 001
+        type: string
+      email:
+        example: updatedtestuser001@example.com
+        type: string
+    required:
+    - display_name
+    - email
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: This is the API documentation for the Bookmark Management service.
+  title: Bookmark Management API
+  version: "1.2"
+paths:
+  /health-check:
+    get:
+      description: Performs a health check and returns the service status.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/healthcheck.healthCheckResponse'
+      summary: Health Check
+      tags:
+      - health
+  /v1/self/info:
+    get:
+      description: Retrieve the profile of the authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.createUserResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            properties:
+              message:
+                type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            properties:
+              message:
+                type: string
+            type: object
+      security:
+      - Bearer: []
+      summary: Get user profile
+      tags:
+      - Users
+    put:
+      consumes:
+      - application/json
+      description: Update the profile of the authenticated user
+      parameters:
+      - description: Updated user profile
+        in: body
+        name: profile
+        required: true
+        schema:
+          $ref: '#/definitions/user.updateProfileRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            properties:
+              message:
+                type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            properties:
+              message:
+                type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            properties:
+              message:
+                type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            properties:
+              message:
+                type: string
+            type: object
+      security:
+      - Bearer: []
+      summary: Update user profile
+      tags:
+      - Users
+  /v1/users/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate a user and return a JWT token
+      parameters:
+      - description: User credentials
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/user.loginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            properties:
+              data:
+                type: string
+              message:
+                type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            properties:
+              message:
+                type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            properties:
+              message:
+                type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            properties:
+              message:
+                type: string
+            type: object
+      summary: User login
+      tags:
+      - Users
+  /v1/users/register:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user with the provided information
+      parameters:
+      - description: User to create
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/user.createUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/user.createUserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            properties:
+              message:
+                type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            properties:
+              message:
+                type: string
+            type: object
+      summary: Create a new user
+      tags:
+      - Users
+schemes:
+- http
+securityDefinitions:
+  Bearer:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

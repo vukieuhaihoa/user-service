@@ -1,0 +1,34 @@
+# Editor/IDE
+.idea/
+.vscode/
+
+# env files
+.env
+.env.local
+.env.*.local
+
+# Dependency directories (remove the comment below to include it)
+# vendor/
+
+# Coverage files
+coverage/
+coverage.out
+coverage.tmp
+coverage.html
+
+# local files
+*.yaml.disabled
+
+pgdata/
+postgres/
+cmd/test/
+
+# RSA keys
+private_key.pem
+public_key.pem
+
+
+# AI
+.claude
+
+docker-compose.dev.yaml
