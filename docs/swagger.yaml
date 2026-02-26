@@ -82,7 +82,7 @@ info:
   contact: {}
   description: This is the API documentation for the User service in the Bookmark
     Management system.
-  title: User API for Bookmark Management Service(DDD Version)
+  title: User API for Bookmark Management Backend(DDD Version)
   version: "1.2"
 paths:
   /health-check:
