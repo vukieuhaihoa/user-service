@@ -3,6 +3,7 @@ package user
 import (
 	"context"
 
+	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/vukieuhaihoa/user-service/internal/app/model"
 )
 
@@ -18,6 +19,9 @@ import (
 //   - *model.User: The updated user model.
 //   - error: An error if the update fails, otherwise nil.
 func (u *userService) UpdateUserByID(ctx context.Context, id, displayName, email string) error {
+	s := newrelic.FromContext(ctx).StartSegment("Service_UpdateUserByID")
+	defer s.End()
+
 	updatedUser := &model.User{
 		DisplayName: displayName,
 		Email:       email,

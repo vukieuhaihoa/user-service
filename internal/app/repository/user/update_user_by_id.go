@@ -3,6 +3,7 @@ package user
 import (
 	"context"
 
+	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/vukieuhaihoa/bookmark-libs/pkg/dbutils"
 	"github.com/vukieuhaihoa/user-service/internal/app/model"
 )
@@ -19,6 +20,9 @@ import (
 // Returns:
 //   - error: An error if the update fails, otherwise nil.
 func (u *userRepository) UpdateUserByID(ctx context.Context, id string, updatedUser *model.User) error {
+	s := newrelic.FromContext(ctx).StartSegment("Repo_UpdateUserByID")
+	defer s.End()
+
 	result := u.db.WithContext(ctx).Model(&model.User{}).Where("id = ?", id).Updates(updatedUser)
 	if result.Error != nil {
 		return dbutils.CatchDBError(result.Error)

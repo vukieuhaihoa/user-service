@@ -3,6 +3,7 @@ package user
 import (
 	"context"
 
+	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/vukieuhaihoa/bookmark-libs/pkg/dbutils"
 	"github.com/vukieuhaihoa/user-service/internal/app/model"
 )
@@ -18,6 +19,9 @@ import (
 //   - *model.User: The created user model.
 //   - error: An error if the creation fails, otherwise nil.
 func (u *userRepository) CreateUser(ctx context.Context, newUser *model.User) (*model.User, error) {
+	s := newrelic.FromContext(ctx).StartSegment("Repo_CreateUser")
+	defer s.End()
+
 	err := u.db.WithContext(ctx).Create(newUser).Error
 	if err != nil {
 		return nil, dbutils.CatchDBError(err)

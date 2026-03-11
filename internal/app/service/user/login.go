@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/newrelic/go-agent/v3/newrelic"
 )
 
 // Login authenticates a user with the provided username and password.
@@ -19,6 +20,9 @@ import (
 //   - string: The JWT token if authentication is successful.
 //   - error: An error if authentication fails, otherwise nil.
 func (u *userService) Login(ctx context.Context, username, password string) (string, error) {
+	s := newrelic.FromContext(ctx).StartSegment("Service_Login")
+	defer s.End()
+
 	user, err := u.userRepo.GetUserByUsername(ctx, username)
 	if err != nil {
 		return "", err

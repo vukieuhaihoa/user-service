@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/rs/zerolog/log"
 	"github.com/vukieuhaihoa/bookmark-libs/pkg/common"
 	"github.com/vukieuhaihoa/bookmark-libs/pkg/dbutils"
@@ -22,6 +23,10 @@ import (
 // @Security     Bearer
 // @Router       /v1/self/info [get]
 func (u *userHandler) GetProfile(c *gin.Context) {
+	nrTx := newrelic.FromContext(c)
+	s := nrTx.StartSegment("Handler_GetProfile")
+	defer s.End()
+
 	userID, err := utils.GetUserIDFromJWTClaims(c)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, common.UnauthorizedResponse)

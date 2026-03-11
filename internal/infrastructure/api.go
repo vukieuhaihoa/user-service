@@ -42,6 +42,9 @@ func CreateAPI() api.Engine {
 	jwtGenerator, jwtValidator := CreateJWTProviders()
 	app := gin.New()
 
+	// new relic client
+	nrClient := CreateNewRelicClient()
+
 	apiEngine := api.New(&api.EngineOpts{
 		Engine:      app,
 		Cfg:         cfg,
@@ -52,6 +55,7 @@ func CreateAPI() api.Engine {
 		PasswordHashing: utils.NewPasswordHashing(),
 		JWTGenerator:    jwtGenerator,
 		JWTValidator:    jwtValidator,
+		NrClient:        nrClient,
 	})
 
 	return apiEngine
