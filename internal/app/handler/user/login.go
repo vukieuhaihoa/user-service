@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/rs/zerolog/log"
 	"github.com/vukieuhaihoa/bookmark-libs/pkg/common"
 	"github.com/vukieuhaihoa/bookmark-libs/pkg/dbutils"
@@ -30,6 +31,10 @@ type loginRequest struct {
 // @Router       /v1/users/login [post]
 func (u *userHandler) Login(c *gin.Context) {
 	// Implementation for user login handler goes here
+	nrTx := newrelic.FromContext(c)
+	s := nrTx.StartSegment("Handler_Login")
+	defer s.End()
+
 	input := &loginRequest{}
 	if err := c.ShouldBindJSON(input); err != nil {
 		c.JSON(http.StatusBadRequest, common.InputFieldError(err))
@@ -39,11 +44,19 @@ func (u *userHandler) Login(c *gin.Context) {
 	token, err := u.userSvc.Login(c, input.Username, input.Password)
 	switch {
 	case errors.Is(err, service.ErrInvalidCredentials):
+		nrTx.Application().RecordCustomEvent("LoginHit", map[string]interface{}{
+			"endpoint":  "GET /v1/users/login",
+			"login_hit": false,
+		})
 		c.JSON(http.StatusBadRequest, common.Message{
 			Message: err.Error(),
 		})
 		return
 	case errors.Is(err, dbutils.ErrRecordNotFoundType):
+		nrTx.Application().RecordCustomEvent("LoginHit", map[string]interface{}{
+			"endpoint":  "GET /v1/users/login",
+			"login_hit": false,
+		})
 		c.JSON(http.StatusBadRequest, common.Message{
 			Message: "invalid username or password",
 		})
@@ -58,6 +71,11 @@ func (u *userHandler) Login(c *gin.Context) {
 		return
 
 	}
+
+	nrTx.Application().RecordCustomEvent("LoginHit", map[string]interface{}{
+		"endpoint":  "GET /v1/users/login",
+		"login_hit": true,
+	})
 
 	c.JSON(http.StatusOK, &common.SuccessResponse[string]{
 		Data:    token,

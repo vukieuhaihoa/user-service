@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
+	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/redis/go-redis/v9"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -27,6 +28,7 @@ import (
 	userRepository "github.com/vukieuhaihoa/user-service/internal/app/repository/user"
 	userService "github.com/vukieuhaihoa/user-service/internal/app/service/user"
 
+	nrgin "github.com/newrelic/go-agent/v3/integrations/nrgin"
 	"github.com/vukieuhaihoa/bookmark-libs/pkg/jwtutils"
 	"github.com/vukieuhaihoa/bookmark-libs/pkg/utils"
 	"github.com/vukieuhaihoa/bookmark-libs/pkg/validators"
@@ -71,6 +73,8 @@ type api struct {
 	jwtGenerator jwtutils.JWTGenerator
 
 	jwtValidator jwtutils.JWTValidator
+
+	nrClient *newrelic.Application
 }
 
 type EngineOpts struct {
@@ -82,6 +86,7 @@ type EngineOpts struct {
 	PasswordHashing utils.PasswordHashing
 	JWTGenerator    jwtutils.JWTGenerator
 	JWTValidator    jwtutils.JWTValidator
+	NrClient        *newrelic.Application
 }
 
 // New creates a new instance of the API engine with the provided options.
@@ -102,6 +107,7 @@ func New(opts *EngineOpts) Engine {
 		db:              opts.SqlDB,
 		jwtGenerator:    opts.JWTGenerator,
 		jwtValidator:    opts.JWTValidator,
+		nrClient:        opts.NrClient,
 	}
 
 	a.registerValidations()
@@ -135,6 +141,8 @@ func (a *api) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (a *api) registerRoutes() {
 	allHandler := a.registerHandlers()
 	allMiddlewares := a.registerMiddlewares()
+
+	a.app.Use(nrgin.Middleware(a.nrClient)) // Add New Relic middleware to capture performance metrics
 
 	// Swagger info setup
 	docs.SwaggerInfo.Host = a.cfg.AppHostName

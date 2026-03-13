@@ -3,6 +3,7 @@ package user
 import (
 	"context"
 
+	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/vukieuhaihoa/user-service/internal/app/model"
 )
 
@@ -20,6 +21,9 @@ import (
 //   - *model.User: The created user model.
 //   - error: An error if the creation fails, otherwise nil.
 func (u *userService) CreateUser(ctx context.Context, username, password, displayName, email string) (*model.User, error) {
+	s := newrelic.FromContext(ctx).StartSegment("Service_CreateUser")
+	defer s.End()
+
 	hashedPassword, err := u.passwordHashing.Hash(password)
 	if err != nil {
 		return nil, err

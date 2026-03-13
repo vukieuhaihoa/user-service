@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/rs/zerolog/log"
 )
 
@@ -31,6 +32,9 @@ type healthCheckResponse struct {
 // @Success 200 {object} healthCheckResponse
 // @Router /health-check [get]
 func (h *healthCheckHandler) Check(c *gin.Context) {
+	s := newrelic.FromContext(c).StartSegment("Handler_Check")
+	defer s.End()
+
 	message, serviceName, instanceID, err := h.svc.Check(c)
 	if err != nil {
 		log.Error().Err(err).Msg("service return error when check health")

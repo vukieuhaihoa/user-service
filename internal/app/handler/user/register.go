@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/rs/zerolog/log"
 	"github.com/vukieuhaihoa/bookmark-libs/pkg/common"
 	"github.com/vukieuhaihoa/bookmark-libs/pkg/dbutils"
@@ -35,6 +36,10 @@ type createUserResponse struct {
 // @Failure      500   {object}  object{message=string}
 // @Router       /v1/users/register [post]
 func (u *userHandler) CreateUser(c *gin.Context) {
+	nrTx := newrelic.FromContext(c)
+	s := nrTx.StartSegment("Handler_CreateUser")
+	defer s.End()
+
 	input := &createUserRequest{}
 	if err := c.ShouldBindJSON(input); err != nil {
 		c.JSON(http.StatusBadRequest, common.InputFieldError(err))

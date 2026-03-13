@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/vukieuhaihoa/bookmark-libs/pkg/dbutils"
 	"github.com/vukieuhaihoa/user-service/internal/app/model"
 )
@@ -20,6 +21,9 @@ import (
 //   - *model.User: The user model if found.
 //   - error: An error if the retrieval fails or the user is not found.
 func (u *userRepository) GetUserByField(ctx context.Context, field string, value string) (*model.User, error) {
+	s := newrelic.FromContext(ctx).StartSegment("Repo_GetUserByField")
+	defer s.End()
+
 	user := &model.User{}
 	err := u.db.WithContext(ctx).Where(fmt.Sprintf("%s = ?", field), value).First(user).Error
 	if err != nil {
